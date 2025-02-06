@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Image Slider</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        .slider {
+            position: relative;
+            width: 80%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+        .slides {
+            display: flex;
+            position: relative;
+        }
+        .slide {
+            min-width: 100%;
+            transition: opacity 1s ease-in-out;
+            position: absolute;
+            opacity: 0;
+        }
+        .slide img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .slide img:hover {
+            transform: scale(1.05);
+        }
+        .slide.active {
+            opacity: 1;
+            position: relative;
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .thumbnails {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .thumbnail {
+            width: 80px;
+            height: 50px;
+            margin: 5px;
+            cursor: pointer;
+            opacity: 0.6;
+            border: 2px solid transparent;
+            transition: transform 0.3s ease-in-out;
+        }
+        .thumbnail:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        .thumbnail.active {
+            opacity: 1;
+            border-color: white;
+        }
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            font-size: 18px;
+            z-index: 10;
+        }
+        .prev { left: 10px; }
+        .next { right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="slider">
+        <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+        <div class="slides">
+            <div class="slide active">
+                <img src="C:\xampp\htdocs\intern task 2\1.jpeg" alt="Machu Picchu">
+                <div class="slide-content">MACHU PICCHU<br>— PERU<br>Adventure is never far away</div>
+            </div>
+            <div class="slide">
+                <img src="C:\xampp\htdocs\intern task 2\2.jpeg" alt="Mountain View">
+            </div>
+            <div class="slide">
+                <img src="C:\xampp\htdocs\intern task 2\3.jpeg" alt="Snowy Peaks">
+            </div>
+        </div>
+        <button class="next" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+    <div class="thumbnails"></div>
+
+    <script>
+        let index = 0;
+        const slides = document.querySelectorAll(".slide");
+        const thumbnailsContainer = document.querySelector(".thumbnails");
+        slides.forEach((slide, i) => {
+            let thumbnail = document.createElement("img");
+            thumbnail.src = slide.querySelector("img").src;
+            thumbnail.classList.add("thumbnail");
+            thumbnail.addEventListener("click", () => goToSlide(i));
+            thumbnailsContainer.appendChild(thumbnail);
+        });
+        const thumbnails = document.querySelectorAll(".thumbnail");
+
+        function updateSlider() {
+            slides.forEach(slide => slide.classList.remove("active"));
+            thumbnails.forEach(thumb => thumb.classList.remove("active"));
+            slides[index].classList.add("active");
+            thumbnails[index].classList.add("active");
+        }
+
+        function moveSlide(n) {
+            index = (index + n + slides.length) % slides.length;
+            updateSlider();
+        }
+
+        function goToSlide(n) {
+            index = n;
+            updateSlider();
+        }
+
+        function autoSlide() {
+            moveSlide(1);
+            setTimeout(autoSlide, 3000);
+        }
+
+        document.querySelector(".slider").addEventListener("touchstart", handleTouchStart, false);
+        document.querySelector(".slider").addEventListener("touchmove", handleTouchMove, false);
+
+        let xDown = null;
+
+        function handleTouchStart(evt) {
+            xDown = evt.touches[0].clientX;
+        }
+
+        function handleTouchMove(evt) {
+            if (!xDown) return;
+            let xUp = evt.touches[0].clientX;
+            let xDiff = xDown - xUp;
+            if (xDiff > 0) moveSlide(1);
+            else moveSlide(-1);
+            xDown = null;
+        }
+
+        updateSlider();
+        setTimeout(autoSlide, 3000);
+    </script>
+</body>
+</html>
